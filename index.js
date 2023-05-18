@@ -35,9 +35,14 @@ async function run() {
     const carCollection = client.db('glazeCar').collection('cars');
 
 
-    app.get('/all-cars', async(req, res)=>{
+    app.get('/all-cars/', async(req, res)=>{
         const result = await carCollection.find().limit(20).toArray();
         res.send(result);
+    })
+    app.get('/search/:text', async (req, res)=>{
+      const searchText = req.params.text;
+      const result = await carCollection.find({name: {$regex: searchText, $options:'i'}}).toArray();
+      res.send(result)
     })
     app.get('/tractor-car/:text', async (req, res)=>{
         const id = req.params.text;
