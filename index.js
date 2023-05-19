@@ -46,7 +46,6 @@ async function run() {
     })
     app.get('/tractor-car/:text', async (req, res)=>{
         const id = req.params.text;
-        console.log(id);
         const cursor  = carCollection.find({subCategory: id}).limit(6)
         const result = await cursor.toArray();
         res.send(result)
@@ -56,7 +55,48 @@ async function run() {
       const result = await carCollection.findOne({_id: new ObjectId(id)})
       res.send(result)
     })
+    app.get('/my-all-toys/:email', async (req, res)=>{
+      const email = req.params.email;
+      
+      const result = await carCollection.find({sellerEmail: email}).toArray()
+      res.send(result)
+    })
+    app.post('/add-toy', async (req, res)=>{
+      const newToy = req.body;
+      const result = await carCollection.insertOne(newToy);
+      res.send(result)
+    })
+    app.put('/update-toy/:id', async (req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const options = { upsert: true };
+      const updateToy = req.body;
 
+      const updatedToy = {
+        $set:{
+          pictureUrl: updateToy.pictureUrl,
+          name: updateToy.name,
+          sellerName: updateToy.sellerName,
+          sellerEmail: updateToy.sellerEmail,
+          subCategory: updateToy.subCategory,
+          price: updateToy.price,
+          rating: updateToy.rating,
+          availableQuantity: updateToy.availableQuantity,
+          description: updateToy.description
+        }
+      }
+
+      const result = await carCollection.updateOne(filter, updatedToy, options)
+      res.send(result)
+    })
+
+
+    app.delete('/delete-toy/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await carCollection.deleteOne(query);
+      res.send(result)
+    })
 
 
     // Send a ping to confirm a successful connection
