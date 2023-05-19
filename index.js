@@ -71,6 +71,14 @@ async function run() {
         const result = await cursor.toArray();
       res.send(result);
     });
+    app.get("/descending/:email", async (req, res) => {
+      const email = req.params.email;
+      const cursor = carCollection
+        .find({sellerEmail: email})
+        .sort({price:-1})
+        const result = await cursor.toArray();
+      res.send(result);
+    });
     app.put("/update-toy/:id", async (req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
